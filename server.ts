@@ -19,8 +19,8 @@ router.get("/viterbi-cs-calendar", async (ctx) => {
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-await app.listen({ port: 3000 });
-console.log("Server is running on port 3000");
+await app.listen({ port: 4090 });
+console.log("Server is running on port 4090");
 
 async function generate_calendar() {
   const nowDate = new Date();
@@ -46,25 +46,29 @@ async function generate_calendar() {
       const events = doc.querySelector("#events");
 
       events?.querySelectorAll("li").forEach((node) => {
-        const event = node as Element;
-        const title_elem = event.querySelector('h3 a');
-        const title = title_elem?.textContent;
-        const link = title_elem?.getAttribute('href');
-        const dateTime = event.querySelector('.event_stats strong')?.textContent;
-        const location = event.querySelector('p a[href^="http://web-app.usc.edu/maps/"]')?.textContent;
-        const details = event.querySelector('blockquote')?.textContent;
-
-        if (title && dateTime) {
-          const { start, end } = parseDateRange(dateTime);
-
-          calendar.createEvent({
-            start: start,
-            end: end,
-            summary: title,
-            location: location,
-            description: details,
-            url: link,
-          });
+        try {
+          const event = node as Element;
+          const title_elem = event.querySelector('h3 a');
+          const title = title_elem?.textContent;
+          const link = title_elem?.getAttribute('href');
+          const dateTime = event.querySelector('.event_stats strong')?.textContent;
+          const location = event.querySelector('p a[href^="http://web-app.usc.edu/maps/"]')?.textContent;
+          const details = event.querySelector('blockquote')?.textContent;
+  
+          if (title && dateTime) {
+            const { start, end } = parseDateRange(dateTime);
+  
+            calendar.createEvent({
+              start: start,
+              end: end,
+              summary: title,
+              location: location,
+              description: details,
+              url: link,
+            });
+          }  
+        } catch (error) {
+          console.error(`Error parsing event:`, error);
         }
       });
     } catch (error) {
