@@ -1,15 +1,36 @@
 import { parse } from "https://esm.sh/date-fns@3.3.1";
 
-export function parseDateRange(dateRangeString: string): { start: Date; end: Date } {
-  const [dateStr, timeRangeStr] = dateRangeString.split(" @ ");
-  const [startTimeStr, endTimeStr] = timeRangeStr.split(" - ");
+export type DateTimeRange = {
+  start: Date;
+  end: Date;
+};
 
-  const dateFormat = "EEE, MMM dd, yyyy";
-  const timeFormat = "hh:mm a";
+export type AllDayRange = {
+  start: Date;
+  allday: true;
+};
 
-  const date = parse(dateStr, dateFormat, new Date());
-  const startTime = parse(startTimeStr, timeFormat, date);
-  const endTime = parse(endTimeStr, timeFormat, date);
+export type DateRange = DateTimeRange | AllDayRange;
 
-  return { start: startTime, end: endTime };
+export function parseDateRange(
+  dateRangeString: string,
+): DateRange {
+  if (!dateRangeString.includes(" @ ")) {
+    const dateStr = dateRangeString;
+    const dateFormat = "EEE, MMM dd, yyyy";
+    const date = parse(dateStr, dateFormat, new Date());
+    return { start: date, allday: true };
+  } else {
+    const [dateStr, timeRangeStr] = dateRangeString.split(" @ ");
+    const [startTimeStr, endTimeStr] = timeRangeStr.split(" - ");
+
+    const dateFormat = "EEE, MMM dd, yyyy";
+    const timeFormat = "hh:mm a";
+
+    const date = parse(dateStr, dateFormat, new Date());
+    const startTime = parse(startTimeStr, timeFormat, date);
+    const endTime = parse(endTimeStr, timeFormat, date);
+
+    return { start: startTime, end: endTime };
+  }
 }

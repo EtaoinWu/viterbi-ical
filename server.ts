@@ -9,8 +9,12 @@ import { parseDateRange } from "./parse_daterange.ts";
 const app = new Application();
 const router = new Router();
 
-router.get("/viterbi-cs-calendar", async (ctx) => {
-  const calendar = await generate_calendar();
+router.get("/viterbi-calendar/:id", async (ctx) => {
+  const id = ctx.params.id;
+  console.log(
+    `Generating calendar for ${id} requested by ${ctx.request.ip}...`,
+  );
+  const calendar = await generate_calendar(id);
 
   ctx.response.headers.set("Content-Type", "text/calendar");
   ctx.response.body = calendar.toString();
@@ -22,15 +26,16 @@ app.use(router.allowedMethods());
 await app.listen({ port: 4090 });
 console.log("Server is running on port 4090");
 
-async function generate_calendar() {
+async function generate_calendar(id: string) {
   const nowDate = new Date();
   const startDate = new Date(nowDate.getFullYear() - 1, nowDate.getMonth(), 2);
   const endDate = new Date(nowDate.getFullYear() + 1, nowDate.getMonth(), 2);
-  const baseUrl = "https://viterbi.usc.edu/calendar/?month&calendar=7&date=";
+  const baseUrl =
+    `https://viterbi.usc.edu/calendar/?month&calendar=${id}&date=`;
 
   const calendar = ical({
     prodId: "//Example//Calendar//EN",
-    name: "USC Viterbi CS Calendar",
+    name: "USC Viterbi Calendar",
   });
 
   let currentDate = startDate;
@@ -59,11 +64,10 @@ async function generate_calendar() {
           const details = event.querySelector("blockquote")?.textContent;
 
           if (title && dateTime) {
-            const { start, end } = parseDateRange(dateTime);
+            const date_range = parseDateRange(dateTime);
 
             calendar.createEvent({
-              start: start,
-              end: end,
+              ...date_range,
               summary: title,
               location: location,
               description: details,
@@ -84,5 +88,8 @@ async function generate_calendar() {
       currentDate.getDay(),
     );
   }
+
+  console.log(`${calendar.length()} events added to calendar.`);
+
   return calendar;
 }

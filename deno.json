@@ -6,4 +6,3 @@
     "dev": "deno run --watch --allow-net server.ts"
   }
 }
-
