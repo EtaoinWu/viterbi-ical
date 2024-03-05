@@ -14,7 +14,9 @@
   "redirects": {
     "https://deno.land/x/deno_dom/deno-dom-wasm.ts": "https://deno.land/x/deno_dom@v0.1.45/deno-dom-wasm.ts",
     "https://deno.land/x/oak/mod.ts": "https://deno.land/x/oak@v14.1.1/mod.ts",
-    "https://esm.sh/ical-generator": "https://esm.sh/ical-generator@6.0.1"
+    "https://esm.sh/ical-generator": "https://esm.sh/ical-generator@6.0.1",
+    "https://esm.sh/luxon": "https://esm.sh/luxon@3.4.4",
+    "https://esm.sh/v135/@types/luxon@^3/index.d.ts": "https://esm.sh/v135/@types/luxon@3.4.2/index.d.ts"
   },
   "remote": {
     "https://cdn.skypack.dev/-/ical-generator@v6.0.1-GIlmctZZWp5Pk5BlTNqV/dist=es2019,mode=imports/optimized/ical-generator.js": "e9ba2f3d11fae3a804479d48a831bfafbdd869abbd6d9e64fbd1249314c9bc58",
@@ -295,6 +297,7 @@
     "https://deno.land/x/xhr@0.3.0/mod.ts": "094aacd627fd9635cd942053bf8032b5223b909858fa9dc8ffa583752ff63b20",
     "https://esm.sh/date-fns@3.3.1": "50ce4e014eaa7f574e21a736155048824a145dccf7a66519eccd63f7266c36da",
     "https://esm.sh/ical-generator@6.0.1": "57086022972d7f45cfce74d5ced4f2780947140c42cb43cc424f9735d5199677",
+    "https://esm.sh/luxon@3.4.4": "d0ab977827047c813736ac318a7ed3494d5d2f5cea20a305405f3134f5702df7",
     "https://esm.sh/node-ical@0.18.0": "062a4f771f6635f324edb284d1bddb8ac9a6f6dc08dc9639d922f7542da12f35",
     "https://esm.sh/v135/axios@1.6.7/denonext/axios.mjs": "f89b508eb857fa88ddc80b49c86c9c22319229d1ce8e0ac6a2e8529690691e8b",
     "https://esm.sh/v135/axios@1.6.7/denonext/lib/adapters/http.js": "1072da11f42893e364c3f54d1a9387a0403c381c2cf5ee4be49f4f8c8796ed7b",
@@ -351,6 +354,7 @@
     "https://esm.sh/v135/follow-redirects@1.15.5/denonext/follow-redirects.mjs": "ceb8e894a4670d8c12cbeeb27c7e58e2acecb2c6280a63611d3536f088f382ef",
     "https://esm.sh/v135/form-data@4.0.0/denonext/form-data.mjs": "48e84ac3b590bc364839367938d7e48ca37615a0c66e56dcc7356c3172ec7790",
     "https://esm.sh/v135/ical-generator@6.0.1/denonext/ical-generator.mjs": "a04a77fcdf566d6d98c78eb930b798ed412aa7ed45f2287ca35f9d26a887ce41",
+    "https://esm.sh/v135/luxon@3.4.4/denonext/luxon.mjs": "033dc975621243fc8a447b2268b5823944fe1fa120242543394eceb1d6c42961",
     "https://esm.sh/v135/moment-timezone@0.5.45/denonext/moment-timezone.mjs": "c60ab9934406ac9ac8b768332d07275836d2f8f6d08391d7c91f05383dbfda87",
     "https://esm.sh/v135/moment@2.30.1/denonext/moment.mjs": "72ca3ed295a9ee29bd5d4e5b39c3c12a48373318ddc3394b853d93b6966d7b09",
     "https://esm.sh/v135/ms@2.1.2/denonext/ms.mjs": "aa4dc45ba72554c5011168f8910cc646c37af53cfff1a15a4decced838b8eb14",

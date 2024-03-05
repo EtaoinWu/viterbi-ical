@@ -12,11 +12,15 @@ import ical, {
   ICalCalendarJSONData,
 } from "https://esm.sh/ical-generator@6.0.1";
 import { parseDateRange } from "./parse_daterange.ts";
-import { gunzip, gzip } from "https://deno.land/x/compress@v0.4.5/mod.ts";
+import { kv_memoize } from "./kv_memo.ts";
+import { DateTime } from "https://esm.sh/luxon@3.4.4";
+import { timeZone } from "./shared.ts";
+
+const isDenoDeploy = Deno.env.get("DENO_DEPLOYMENT_ID") !== undefined;
 
 const app = new Application();
 const router = new Router();
-const expire_time = 1000 * 60 * 30; // 30 minutes
+const expire_time = isDenoDeploy ? 1000 * 60 * 30 : 1000 * 10; // 30 minutes
 
 router.get("/", async (ctx) => {
   // sends index.md as html
@@ -38,35 +42,6 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 app.listen({ port: 4090 });
-
-const kv = await Deno.openKv();
-
-function kv_memoize<T>(
-  salt: string,
-  fn: (...xs: string[]) => Promise<T>,
-  expireIn: number = 1000 * 10,
-): typeof fn {
-  return async (...xs: string[]) => {
-    const key = [salt, ...xs];
-    const cached = await kv.get<Uint8Array>(key);
-    if (cached.value !== null) {
-      console.log(`Cache hit for ${key.join(".")}`);
-      const compressed = cached.value;
-      const encoded = gunzip(compressed);
-      const stringified = new TextDecoder().decode(encoded);
-      return JSON.parse(stringified) as T;
-    } else {
-      console.log(`Cache miss for ${key.join(".")}`);
-      const result = await fn(...xs);
-      const stringified = JSON.stringify(result);
-      const encoded = new TextEncoder().encode(stringified);
-      const compressed = gzip(encoded);
-      console.log(`Item size: ${encoded.length} -> ${compressed.length}`);
-      await kv.set(key, compressed, { expireIn });
-      return result;
-    }
-  };
-}
 
 async function generate_calendar_month(
   id: string,
@@ -131,17 +106,9 @@ const generate_calendar_month_ = kv_memoize(
 );
 
 async function generate_calendar(id: string): Promise<string> {
-  const nowDate = new Date();
-  const startDate = new Date(
-    nowDate.getFullYear() - 1,
-    nowDate.getMonth(),
-    nowDate.getDay(),
-  );
-  const endDate = new Date(
-    nowDate.getFullYear() + 1,
-    nowDate.getMonth(),
-    nowDate.getDay(),
-  );
+  const now = DateTime.now().setZone(timeZone);
+  const startDate = now.minus({ years: 1 }).startOf("month");
+  const endDate = now.plus({ years: 1 }).startOf("month");
 
   const calendar = ical({
     prodId: "//Example//Calendar//EN",
@@ -150,8 +117,8 @@ async function generate_calendar(id: string): Promise<string> {
 
   let currentDate = startDate;
   while (currentDate <= endDate) {
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const year = currentDate.toFormat("yyyy");
+    const month = currentDate.toFormat("LL");
 
     const sub_calendar_json = await generate_calendar_month_(
       id,
@@ -164,11 +131,7 @@ async function generate_calendar(id: string): Promise<string> {
       calendar.createEvent(event);
     }
 
-    currentDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      currentDate.getDay(),
-    );
+    currentDate = currentDate.plus({ months: 1 });
   }
 
   const result = calendar.toString();
