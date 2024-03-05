@@ -48,16 +48,19 @@ async function generate_calendar() {
       events?.querySelectorAll("li").forEach((node) => {
         try {
           const event = node as Element;
-          const title_elem = event.querySelector('h3 a');
+          const title_elem = event.querySelector("h3 a");
           const title = title_elem?.textContent;
-          const link = title_elem?.getAttribute('href');
-          const dateTime = event.querySelector('.event_stats strong')?.textContent;
-          const location = event.querySelector('p a[href^="http://web-app.usc.edu/maps/"]')?.textContent;
-          const details = event.querySelector('blockquote')?.textContent;
-  
+          const link = title_elem?.getAttribute("href");
+          const dateTime = event.querySelector(".event_stats strong")
+            ?.textContent;
+          const location = event.querySelector(
+            'p a[href^="http://web-app.usc.edu/maps/"]',
+          )?.textContent;
+          const details = event.querySelector("blockquote")?.textContent;
+
           if (title && dateTime) {
             const { start, end } = parseDateRange(dateTime);
-  
+
             calendar.createEvent({
               start: start,
               end: end,
@@ -66,7 +69,7 @@ async function generate_calendar() {
               description: details,
               url: link,
             });
-          }  
+          }
         } catch (error) {
           console.error(`Error parsing event:`, error);
         }
@@ -75,7 +78,11 @@ async function generate_calendar() {
       console.error(`Error fetching ${url}:`, error);
     }
 
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      currentDate.getDay(),
+    );
   }
   return calendar;
 }
