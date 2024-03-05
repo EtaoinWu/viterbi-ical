@@ -69,7 +69,8 @@ async function generate_calendar_month(
         const event = node as Element;
         const title_elem = event.querySelector("h3 a");
         const title = title_elem?.textContent;
-        const link = title_elem?.getAttribute("href");
+        const rel_link = title_elem?.getAttribute("href");
+        const link = rel_link ? new URL(rel_link, url).toString() : undefined;
         const dateTime = event.querySelector(".event_stats strong")
           ?.textContent;
         const location = event.querySelector(
